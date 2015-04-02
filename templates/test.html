@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+    </style>
+
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDh5Yw1A9sdux0lFCw3cjBN4UdKRwOukSo&sensor=false&libraries=geometry"> 
+    </script>
+    <script type="text/javascript">
+    
+        var options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        };
+
+        function success(pos) {
+          var crd = pos.coords;
+          var current = new google.maps.LatLng(crd.latitude,crd.longitude);
+          console.log(current)
+          
+          var destination = new google.maps.LatLng(40.1, -106.12); 
+         console.log(destination);
+          var mapOptions = {
+            center: current,
+            zoom: 14
+          }
+
+          console.log(google.maps.geometry.spherical.computeDistanceBetween(current, destination));
+
+          console.log(mapOptions)
+          console.log('Your current position is:');
+          console.log('Latitude : ' + crd.latitude);
+          console.log('Longitude: ' + crd.longitude);
+          console.log('More or less ' + crd.accuracy + ' meters.');
+          var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions); 
+          
+          var marker = new google.maps.Marker({
+            position: current,
+            map: map,
+            title:"Hello World!"
+          });
+        };
+
+        function error(err) {
+          console.warn('ERROR(' + err.code + '): ' + err.message);
+        };
+
+        navigator.geolocation.getCurrentPosition(success, error, options);
+        //This generate the 
+        google.maps.event.addDomListener(window, 'load', initialize);
+       
+    </script>
+  </head>
+  <body>
+<div id="map-canvas"></div>
+  </body>
+</html>

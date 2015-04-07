@@ -47,54 +47,63 @@
     </div>
 </div>
 
-<div id="map-canvas"></div>
+<div id="map-canvas">
+</div>
 <div class="container-fluid" id="main">
   <div class="row">
-    <div class="col-xs-8" id="left">
+    <!-- Size text defined here. Define size of map in styles.css -->
+    <div class="col-xs-4" id="left">
     
       <h2>Bootstrap Google Maps Demo</h2>
       
       <!-- item list -->
       <div class="panel panel-default">
-        <div class="panel-heading"><a href="">Item heading</a></div>
+        <div class="panel-heading"><h4>Bus Line</h4></div>
       </div>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-        Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-        dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-        Aliquam in felis sit amet augue.</p>
-      
+        <select class="form-control" id="busLineSelect">
+          <option value="1">BV</option>
+          <option value="2">BX</option>
+          <option value="3">BMX</option>
+          <option value="4">Foo</option>
+          <option value="5">Bar</option>
+        </select>
       <hr>
       
       <div class="panel panel-default">
-        <div class="panel-heading"><a href="">Item heading</a></div>
+        <div class="panel-heading"><h4>Desired Stop</h4></div>
       </div>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-        Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-        dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-        Aliquam in felis sit amet augue.</p>
-      
-      <hr>
-      
+        <!-- TODO, POPULATE THIS FROM DATABSE -->
+        <select class="form-control" id="destinationSelect">
+          <option value="1">Stop 1</option>
+          <option value="2">Stop 2</option>
+          <option value="3">Stop 3</option>
+          <option value="4">Stop 4</option>
+          <option value="5">Stop 5</option>
+        </select>
+      <hr>      
+
       <div class="panel panel-default">
-        <div class="panel-heading"><a href="">Item heading</a></div>
+        <div class="panel-heading"><h4>Wakeup distance</h4></div>
       </div>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-        Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-        dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-        Aliquam in felis sit amet augue.</p>
-      
-      <hr>
-      
+        <!-- TODO, POPULATE THIS FROM DATABSE -->
+        <select class="form-control" id="toleranceSelect">
+          <option value="5000">5000 meters</option>
+          <option value="2500">2500 meters</option>
+          <option value="1500">1500 meters</option>
+          <option value="1000">1000 meters</option>
+          <option value="500">500 meters</option>
+        </select>
+      <hr>      
+
+
+
       <div class="panel panel-default">
-        <div class="panel-heading"><a href="">Item heading</a></div>
+        <div class="panel-heading"><h4>About </h4></div>
       </div>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-        Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-        dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-        Aliquam in felis sit amet augue.</p>
-      
+      <p>This is for our Data Engineering Class -- PUT INFO ABOUT THE PROGRAM HERE</p>
+
       <hr>
-      <!-- /item list -->
+      
       
       <p>
       <a href="http://www.bootply.com/render/129229">Demo</a> | <a href="http://bootply.com/129229">Source Code</a>
@@ -108,17 +117,14 @@
         
       <hr>      
 
-    </div>
-    <div class="col-xs-4"><!--map-canvas will be postioned here--></div>
-    
+    </div>    
   </div>
-</div>
 <!-- end template -->
 	<!-- script references -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>    
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDh5Yw1A9sdux0lFCw3cjBN4UdKRwOukSo&sensor=false&libraries=geometry"></script>
     <!--     <script src="{{ url_for(".static", filename="js/rtdGps.js") }}"></script>-->    
-    <script src="{{ url_for(".static", filename="js/scripts.js") }}"></script>
+    <script src="{{ url_for(".static", filename="js/rtdGpsNew.js") }}"></script>
 	</body>
 </html>

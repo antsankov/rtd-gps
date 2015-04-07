@@ -80,21 +80,21 @@ $(document).ready(function(){
   var busLineSelect = document.getElementById("busLineSelect");
   var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
 
-  var destinationSelect = document.getElementById("destinationSelect");
-  var destination = destinationSelect.options[destinationSelect.selectedIndex].value;
+  //Disable boxes by default and only unlock when it has been populated
+  //var destinationSelect = document.getElementById("destinationSelect");
+  //var destination = destinationSelect.options[destinationSelect.selectedIndex].value;
 
   var toleranceSelect = document.getElementById("toleranceSelect");
   var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
 
   //google.maps.event.addDomListener(window, 'load', initialize);
+  // google.maps.event.addDomListener(toleranceSelect, 'click', function() {
+  //   initialize();
+  // });
 
-  google.maps.event.addDomListener(toleranceSelect, 'click', function() {
-      if (this.value != "") {
-              // get the value of the select box #country and set the map center to this
-              initialize();
-      }
+  toleranceSelect.addEventListener("change", function(){ 
+    initialize();
   });
-
 
   function initialize() {
       function success(pos) {
@@ -114,14 +114,14 @@ $(document).ready(function(){
       var destinationMarker = new google.maps.Marker({
         position: destination,
         map: globalMap,
-        title: "Where I am going!"
+        title: "DESTINATION"
       });
       markers.push(destinationMarker)
-      console.log(markers)
+
       var current_marker = new google.maps.Marker({
         position: current,
         map: globalMap,
-        title:"Hello World!"
+        title:"START"
       });
       markers.push(current_marker)
     };

@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
-		<title>2 column Google maps, foursquare (outer scroll)</title>
+		<title>Bus Timer</title>
 		<meta name="generator" content="Bootply" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -12,38 +12,12 @@
 	<body>
 <!-- begin template -->
 <div class="navbar navbar-custom navbar-fixed-top">
- <div class="navbar-header"><a class="navbar-brand" href="#">Brand</a>
+ <div class="navbar-header"><a class="navbar-brand" href="#">RTD Bus Timer</a>
       <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </a>
-    </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">Link</a></li>
-        <li><a href="#">Link</a></li>
-        <li>&nbsp;</li>
-      </ul>
-      <form class="navbar-form">
-        <div class="form-group" style="display:inline;">
-          <div class="input-group">
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-chevron-down"></span></button>
-              <ul class="dropdown-menu">
-                <li><a href="#">Category 1</a></li>
-                <li><a href="#">Category 2</a></li>
-                <li><a href="#">Category 3</a></li>
-                <li><a href="#">Category 4</a></li>
-                <li><a href="#">Category 5</a></li> 
-              </ul>
-            </div>
-            <input type="text" class="form-control" placeholder="What are searching for?">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span> </span>
-          </div>
-        </div>
-      </form>
     </div>
 </div>
 
@@ -54,7 +28,8 @@
     <!-- Size text defined here. Define size of map in styles.css -->
     <div class="col-xs-4" id="left">
     
-      <h2>Bootstrap Google Maps Demo</h2>
+    <!-- <h3>Select a bus line, a stop, and a distance to be woken up!</h3>-->   
+    <h3> SELECT A WAKEUP DISTANCE TO ACTIVATE THE MAP </h3>   
       
       <!-- item list -->
       <div class="panel panel-default">
@@ -87,6 +62,7 @@
       </div>
         <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="toleranceSelect">
+          <option selected="selected" disabled="disabled">Select a Distance to wakeup to activate</option>
           <option value="5000">5000 meters</option>
           <option value="2500">2500 meters</option>
           <option value="1500">1500 meters</option>
@@ -102,17 +78,14 @@
       </div>
       <p>This is for our Data Engineering Class -- PUT INFO ABOUT THE PROGRAM HERE</p>
 
-      <hr>
-      
-      
+<!--       <hr>
       <p>
       <a href="http://www.bootply.com/render/129229">Demo</a> | <a href="http://bootply.com/129229">Source Code</a>
-      </p>
+      </p> -->
       
-      <hr> 
-        
+      <hr>    
       <p>
-      <a href="http://bootply.com" target="_ext" class="center-block btn btn-primary">More Bootstrap Snippets on Bootply</a>
+      <a href="https://github.com/antsankov/rtd-gps" target="_ext" class="center-block btn btn-primary">Check out the Source Code!</a>
       </p>
         
       <hr>      

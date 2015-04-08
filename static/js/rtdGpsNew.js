@@ -2,6 +2,7 @@
 //Declare global vars here. Remove these in future
 var globalMap; 
 var markers = [];
+var circles = [];
 
 //our bv_stops, a dictionary of the stops
 // see http://www3.rtd-denver.com/schedules/getSchedule.action?routeId=BV for stops
@@ -17,6 +18,7 @@ var bvStops = {
     'wewatta_21st' : new google.maps.LatLng(39.756907, -104.996797),
     'union_station' : new google.maps.LatLng(39.752651, -105.001685)
 }
+
 
 
 //these are the options for getting the gps coordinates 
@@ -57,12 +59,14 @@ function calcDistance(loc1,loc2,tolerance) {
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (distance <= tolerance){
     //make a noise
-    alert("TIME TO WAKE UP");
+    console.log("TIME TO WAKE UP")
+    console.log("Distance")
+    //alert("TIME TO WAKE UP");
   }
 }
 
 //this updates the map with our new position. 
-function updateMap(destination){
+function updateMap(destination,tolerance){
   //calculate our current position and run some other stuff. We might need to loop this every 10 seconds.
   function success(pos) {
     
@@ -71,15 +75,31 @@ function updateMap(destination){
     var current = new google.maps.LatLng(crd.latitude,crd.longitude);
     // globalMap.panTo(current)
 
-    calcDistance(current,destination);
+    calcDistance(current,destination,tolerance);
     markers.pop().setMap(null);
+    circles.pop().setMap(null);
     
     var current_marker = new google.maps.Marker({
       position: current,
       map: globalMap,
       title:current.toString()
     }); 
+
+    var circleOptions = {
+          strokeColor: '#FF0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#FF0000',
+          fillOpacity: 0.35,
+          map: globalMap,
+          center: current,
+          radius: tolerance    
+    };
+
+    centerCircle = new google.maps.Circle(circleOptions);
+
     markers.push(current_marker);
+    circles.push(centerCircle);
   };
 
   function error(err) {
@@ -117,7 +137,7 @@ $(document).ready(function(){
 
     var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
 
-    initialize(spinner,busLine,destinationCoord,tolerance);
+    initialize(spinner,busLine,destinationCoord,parseInt(tolerance,10));
   });
 
   function initialize(spinner,busLine,destination,tolerance) {
@@ -128,7 +148,7 @@ $(document).ready(function(){
       //the map options for google maps
       var mapOptions = {
         center: current,
-        zoom: 14
+        zoom: 11
       }
 
       //instantiate the google map object
@@ -149,6 +169,22 @@ $(document).ready(function(){
         title:"START"
       });
       markers.push(current_marker)
+
+      var circleOptions = {
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            map: globalMap,
+            center: current,
+            radius: tolerance    
+      };
+
+      centerCircle = new google.maps.Circle(circleOptions);
+      circles.push(centerCircle);
+
+
     };
     function error(err) {
       console.warn('ERROR(' + err.code + '): ' + err.message);
@@ -157,7 +193,7 @@ $(document).ready(function(){
 
     /* updates the map every 5 seconds */
     window.setInterval(function(){
-      updateMap(destination)   
+      updateMap(destination,tolerance)   
     },5000);
   }
 });

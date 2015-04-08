@@ -6,7 +6,7 @@ var markers = [];
 //our bv_stops, a dictionary of the stops
 // see http://www3.rtd-denver.com/schedules/getSchedule.action?routeId=BV for stops
 // see http://www.latlong.net/ for coordinates
-var bv_stops = {
+var bvStops = {
     'boulder_transit_center' : new google.maps.LatLng(40.017103,-105.276444),
     'broadway_16th' : new google.maps.LatLng(40.005663,-105.272381),
     'broadway_27th' : new google.maps.LatLng(39.996074,-105.261018),
@@ -18,7 +18,6 @@ var bv_stops = {
     'union_station' : new google.maps.LatLng(39.752651, -105.001685)
 }
 
-var destination = bv_stops['broadway_27th'];
 
 //these are the options for getting the gps coordinates 
 var options = {
@@ -28,30 +27,49 @@ var options = {
 };
 /////////////////////////////////////////////
 
+var busLineSelect = document.getElementById("busLineSelect");
+var toleranceSelect = document.getElementById("toleranceSelect");
+var destinationSelect = document.getElementById("destinationSelect");
+
+///////////Spinner///////////////
+var opts = {
+  lines: 13, // The number of lines to draw
+  length: 20, // The length of each line
+  width: 10, // The line thickness
+  radius: 30, // The radius of the inner circle
+  corners: 1, // Corner roundness (0..1)
+  rotate: 0, // The rotation offset
+  direction: 1, // 1: clockwise, -1: counterclockwise
+  color: '#000', // #rgb or #rrggbb or array of colors
+  speed: 1, // Rounds per second
+  trail: 60, // Afterglow percentage
+  shadow: false, // Whether to render a shadow
+  hwaccel: false, // Whether to use hardware acceleration
+  className: 'spinner', // The CSS class to assign to the spinner
+  zIndex: 2e9, // The z-index (defaults to 2000000000)
+  top: '50%', // Top position relative to parent
+  left: '50%' // Left position relative to parent
+};
 
 // a simple wrapper function around computeDistance that takes a tolerance. EVERYTHING IN METERS
-function calcDistance(loc1,loc2) {
-
-  var toleranceSelect = document.getElementById("toleranceSelect");
-  var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
+function calcDistance(loc1,loc2,tolerance) {
 
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
-  if (distance <= tolerance)
+  if (distance <= tolerance){
     //make a noise
-    console.log("TIME TO WAKE UP");
-  else
-    console.log("Everything ok");
+    alert("TIME TO WAKE UP");
+  }
 }
 
 //this updates the map with our new position. 
-function updateMap(){
+function updateMap(destination){
   //calculate our current position and run some other stuff. We might need to loop this every 10 seconds.
   function success(pos) {
     
     var crd = pos.coords;
 
     var current = new google.maps.LatLng(crd.latitude,crd.longitude);
-    globalMap.panTo(current)
+    // globalMap.panTo(current)
 
     calcDistance(current,destination);
     markers.pop().setMap(null);
@@ -77,27 +95,33 @@ This is where the Google maps is actually rendered
 
 $(document).ready(function(){
 
-  var busLineSelect = document.getElementById("busLineSelect");
-  var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
+  var button = document.getElementById('startButton');
+  console.log(button)
+  //tell the spinner where to spawn. 
+  var target = document.getElementById('map-canvas');
 
-  //Disable boxes by default and only unlock when it has been populated
-  //var destinationSelect = document.getElementById("destinationSelect");
-  //var destination = destinationSelect.options[destinationSelect.selectedIndex].value;
 
-  var toleranceSelect = document.getElementById("toleranceSelect");
-  var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
 
-  //google.maps.event.addDomListener(window, 'load', initialize);
-  // google.maps.event.addDomListener(toleranceSelect, 'click', function() {
-  //   initialize();
-  // });
+  /**************IMPORTANT*************
+  THIS IS WHERE WE LISTEN TO THE 'tolearnce box' to start drawing the map!
+  **************************************/
 
-  toleranceSelect.addEventListener("change", function(){ 
-    initialize();
+  button.addEventListener("click", function(){ 
+    //create the spinner 
+    var spinner = new Spinner(opts).spin(target);
+
+    var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
+
+    var destinationOption = destinationSelect.options[destinationSelect.selectedIndex].value;
+    var destinationCoord = bvStops[destinationOption];
+
+    var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
+
+    initialize(spinner,busLine,destinationCoord,tolerance);
   });
 
-  function initialize() {
-      function success(pos) {
+  function initialize(spinner,busLine,destination,tolerance) {
+    function success(pos) {
       var crd = pos.coords;
       var current = new google.maps.LatLng(crd.latitude,crd.longitude);
 
@@ -109,6 +133,7 @@ $(document).ready(function(){
 
       //instantiate the google map object
       globalMap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+      spinner.stop()
 
       //some markers on the map
       var destinationMarker = new google.maps.Marker({
@@ -132,7 +157,7 @@ $(document).ready(function(){
 
     /* updates the map every 5 seconds */
     window.setInterval(function(){
-      updateMap()   
+      updateMap(destination)   
     },5000);
   }
 });

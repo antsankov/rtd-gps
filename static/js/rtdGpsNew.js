@@ -17,7 +17,7 @@ var bvStops = {
     'church_ranch_pr' : new google.maps.LatLng(39.888028, -105.073054),
     'wewatta_21st' : new google.maps.LatLng(39.756907, -104.996797),
     'union_station' : new google.maps.LatLng(39.752651, -105.001685)
-}
+};
 
 
 
@@ -59,8 +59,8 @@ function calcDistance(loc1,loc2,tolerance) {
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (distance <= tolerance){
     //make a noise
-    console.log("TIME TO WAKE UP")
-    console.log("Distance")
+    console.log("TIME TO WAKE UP");
+    console.log("Distance");
     //alert("TIME TO WAKE UP");
   }
 }
@@ -100,14 +100,14 @@ function updateMap(destination,tolerance){
 
     markers.push(current_marker);
     circles.push(centerCircle);
-  };
+  }
 
   function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
-  };
+  }
   //this actually gets our location
   navigator.geolocation.getCurrentPosition(success, error, options);
-};
+}
 
 /********************
 This is where the Google maps is actually rendered
@@ -116,16 +116,13 @@ This is where the Google maps is actually rendered
 $(document).ready(function(){
 
   var button = document.getElementById('startButton');
-  console.log(button)
+
   //tell the spinner where to spawn. 
   var target = document.getElementById('map-canvas');
-
-
 
   /**************IMPORTANT*************
   THIS IS WHERE WE LISTEN TO THE 'tolearnce box' to start drawing the map!
   **************************************/
-
   button.addEventListener("click", function(){ 
     //create the spinner 
     var spinner = new Spinner(opts).spin(target);
@@ -149,11 +146,10 @@ $(document).ready(function(){
       var mapOptions = {
         center: current,
         zoom: 11
-      }
-
+      };
       //instantiate the google map object
       globalMap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-      spinner.stop()
+      spinner.stop();
 
       //some markers on the map
       var destinationMarker = new google.maps.Marker({
@@ -161,14 +157,14 @@ $(document).ready(function(){
         map: globalMap,
         title: "DESTINATION"
       });
-      markers.push(destinationMarker)
+      markers.push(destinationMarker);
 
       var current_marker = new google.maps.Marker({
         position: current,
         map: globalMap,
         title:"START"
       });
-      markers.push(current_marker)
+      markers.push(current_marker);
 
       var circleOptions = {
             strokeColor: '#FF0000',
@@ -183,17 +179,17 @@ $(document).ready(function(){
 
       centerCircle = new google.maps.Circle(circleOptions);
       circles.push(centerCircle);
+    }
 
-
-    };
     function error(err) {
       console.warn('ERROR(' + err.code + '): ' + err.message);
-    };
+    }
+    
     navigator.geolocation.getCurrentPosition(success, error, options);
 
     /* updates the map every 5 seconds */
     window.setInterval(function(){
-      updateMap(destination,tolerance)   
+      updateMap(destination,tolerance);
     },5000);
   }
 });

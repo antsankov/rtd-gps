@@ -52,6 +52,7 @@ var opts = {
   top: '50%', // Top position relative to parent
   left: '50%' // Left position relative to parent
 };
+////////////////////////////////////////////////
 
 // a simple wrapper function around computeDistance that takes a tolerance. EVERYTHING IN METERS
 function calcDistance(loc1,loc2,tolerance) {
@@ -60,7 +61,6 @@ function calcDistance(loc1,loc2,tolerance) {
   if (distance <= tolerance){
     //make a noise
     console.log("TIME TO WAKE UP");
-    console.log("Distance");
     //alert("TIME TO WAKE UP");
   }
 }
@@ -76,15 +76,17 @@ function updateMap(destination,tolerance){
     // globalMap.panTo(current)
 
     calcDistance(current,destination,tolerance);
-    markers.pop().setMap(null);
-    circles.pop().setMap(null);
-    
+
+    markers.pop().setMap(null);    
     var current_marker = new google.maps.Marker({
       position: current,
       map: globalMap,
       title:current.toString()
     }); 
 
+    markers.push(current_marker);
+    circles.pop().setMap(null);
+    
     var circleOptions = {
           strokeColor: '#FF0000',
           strokeOpacity: 0.8,
@@ -95,10 +97,7 @@ function updateMap(destination,tolerance){
           center: current,
           radius: tolerance    
     };
-
     centerCircle = new google.maps.Circle(circleOptions);
-
-    markers.push(current_marker);
     circles.push(centerCircle);
   }
 
@@ -115,30 +114,60 @@ This is where the Google maps is actually rendered
 
 $(document).ready(function(){
 
-  var button = document.getElementById('startButton');
-
   //tell the spinner where to spawn. 
   var target = document.getElementById('map-canvas');
+
+  var busLineSelect = document.getElementById("busLineSelect")
+
+  var busStopSelect = document.getElementById("busStopSelect")
+  busStopSelect.disabled = true;
+
+  var toleranceSelect = document.getElementById("toleranceSelect")
+  toleranceSelect.disabled = true; 
+
+  var button = document.getElementById('startButton');
+  $('startButton').prop('disabled', true);
+
+  busLineSelect.addEventListener("change", function(){
+    console.log("BUS LINE SELECT")
+    busStopSelect.disabled = false;
+  })
+
+  busStopSelect.addEventListener("change", function (){
+    console.log("BUS STOP SELECT ")
+    toleranceSelect.disabled = false;
+  })
+
+  toleranceSelect.addEventListener("change", function(){
+    $('startbutton').prop('disabled', true);
+  })
 
   /**************IMPORTANT*************
   THIS IS WHERE WE LISTEN TO THE 'tolearnce box' to start drawing the map!
   **************************************/
   button.addEventListener("click", function(){ 
     //create the spinner 
-    var spinner = new Spinner(opts).spin(target);
-
     var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
 
-    var destinationOption = destinationSelect.options[destinationSelect.selectedIndex].value;
+    var destinationOption = busStopSelect.options[busStopSelect.selectedIndex].value;
     var destinationCoord = bvStops[destinationOption];
 
     var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
 
-    initialize(spinner,busLine,destinationCoord,parseInt(tolerance,10));
+    if (busLine && destinationOption && destinationCoord && !isNaN(tolerance)) {
+      var spinner = new Spinner(opts).spin(target);
+      initialize(spinner,busLine,destinationCoord,parseInt(tolerance,10));
+    }
+
+    else{
+      alert("Selection unfilled!")
+    }
   });
 
+  //this is our function to initialize our map. 
   function initialize(spinner,busLine,destination,tolerance) {
     function success(pos) {
+      circles = [];
       var crd = pos.coords;
       var current = new google.maps.LatLng(crd.latitude,crd.longitude);
 
@@ -185,6 +214,7 @@ $(document).ready(function(){
       console.warn('ERROR(' + err.code + '): ' + err.message);
     }
     
+    //this is the actual location updater. 
     navigator.geolocation.getCurrentPosition(success, error, options);
 
     /* updates the map every 5 seconds */

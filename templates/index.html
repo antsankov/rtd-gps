@@ -35,7 +35,9 @@
       <div class="panel panel-default">
         <div class="panel-heading"><h4>Bus Line</h4></div>
       </div>
+        <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="busLineSelect">
+          <option selected="selected" disabled="disabled">Select a Bus Line</option>
           <option value="1">BV</option>
           <option value="2">BX</option>
           <option value="3">BMX</option>
@@ -48,7 +50,7 @@
         <div class="panel-heading"><h4>Desired Stop</h4></div>
       </div>
         <!-- TODO, POPULATE THIS FROM DATABSE -->
-        <select class="form-control" id="destinationSelect">
+        <select class="form-control" id="busStopSelect">
           <option selected="selected" disabled="disabled">Select a Stop</option>
           <option value="boulder_transit_center">boulder_transit_center</option>
           <option value="broadway_16th">broadway_16th</option>
@@ -65,7 +67,6 @@
       <div class="panel panel-default">
         <div class="panel-heading"><h4>Wakeup distance</h4></div>
       </div>
-        <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="toleranceSelect">
           <option selected="selected" disabled="disabled">Select a Distance to wakeup to activate</option>
           <option value="5000">5000 meters</option>

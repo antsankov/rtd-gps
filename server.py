@@ -21,10 +21,18 @@ def return_nice(name=None):
 def return_working(name=None): 
     return render_template('test.html', name = name)
 
-def populate_routes():
-    print("HOWDY")
-    bus_routes = []
+@app.route('/stops', methods=['POST'])
+def get_stops(name=None):
+    route_stops = []
+    for stop in stops_c.find({"properties.ROUTES": request.form['route']}, {"_id":0,"properties.STOPNAME":1,"properties.LONG":1,"properties.LAT":1}):
+        route_stops.append(stop)
 
+    stops_json = json.dumps(route_stops)
+    return stops_json
+
+#this populates our bus routes whenever the server is started up. 
+def populate_routes():
+    bus_routes = []
     for route in  routes_c.find({},{"_id" : 0, "properties.ROUTE": 1}): 
         bus_routes.append(route)
 
@@ -33,5 +41,4 @@ def populate_routes():
 
 if __name__ == '__main__':
     populate_routes()
-    print bus_routes_json
     app.run(debug=True,host='0.0.0.0')

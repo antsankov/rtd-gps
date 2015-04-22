@@ -52,7 +52,7 @@
         <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="busStopSelect">
           <option selected="selected" disabled="disabled">Select a Stop</option>
-          <option value="boulder_transit_center">boulder_transit_center</option>
+<!--           <option value="boulder_transit_center">boulder_transit_center</option>
           <option value="broadway_16th">broadway_16th</option>
           <option value="broadway_27th">broadway_27th</option>
           <option value="table_mesa_pr">table_mesa_pr</option>
@@ -60,7 +60,7 @@
           <option value="flatiron_circle_pr">flatiron_circle_pr</option>
           <option value="church_ranch_pr">church_ranch_pr</option>
           <option value="wewatta_21st">wewatta_21st</option>
-          <option value="union_station">union_station</option>
+          <option value="union_station">union_station</option> -->
         </select>
       <hr>      
 
@@ -116,7 +116,7 @@
       var busLineForm = document.getElementById('busLineSelect')
       //these are the routes given by python
       var routes = {{ busRoutes|safe }}
-
+      console.log(routes)
       //go through all of the routes, and add them to the bus lines. 
       for (route of routes){
         var routeString = route.properties.ROUTE

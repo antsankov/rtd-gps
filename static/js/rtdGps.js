@@ -60,6 +60,15 @@ function calcDistance(loc1,loc2,tolerance) {
   }
 }
 
+//clears any html options in a selctbox
+function removeOptions(selectbox){
+    var i;
+    for(i=selectbox.options.length-1;i>=0;i--){
+        selectbox.remove(i);
+    }
+}
+////////////////////////////////////////////////
+
 //this updates the map with our new position. 
 function updateMap(destination,tolerance){
   //calculate our current position and run some other stuff. We might need to loop this every 10 seconds.
@@ -169,6 +178,10 @@ function initialize(spinner,busLine,destination,tolerance) {
   },5000);
 }
 
+/*
+Jquery stuff for when the page is loaded.
+*/
+
 $(document).ready(function(){
 
   //tell the spinner where to spawn. 
@@ -176,32 +189,47 @@ $(document).ready(function(){
 
   busStopSelect.disabled = true;
   toleranceSelect.disabled = true; 
-
+  //this is where we listen to any changes for our bus line select. 
   busLineSelect.addEventListener("change", function(){
-
+    //data for our ajax request, we only need the busLine
     var data = {route : busLineSelect.options[busLineSelect.selectedIndex].value}
-
+    //the body for our ajax request. this is all a json.
     $.ajax({
-
       url: 'stops',
       data: data,
       type: 'POST',
 
       success: function(response){
-        console.log(response);
+        //parse the response from our python server to an array of objects.
+        stops = JSON.parse(response)
+        //this is the form we are going to be using
+        stopSelect = document.getElementById('busStopSelect');
+        removeOptions(stopSelect);
+
+        //iterate through all of the stops we just got and adds it to the form 
+        for (stop of stops){
+          var routeString = route.properties.ROUTE
+
+          var value = document.createElement("OPTION");
+          value.setAttribute("value", stop.properties.STOPNAME);
+
+          var text = document.createTextNode(stop.properties.STOPNAME);
+          value.appendChild(text);
+
+          stopSelect.appendChild(value);
+        }
       },
+
       error: function(error){
         console.log(error);
       }
-
-    })
-
-
+  })
+  //once it's been populated, we can reenable our busStop selector
   busStopSelect.disabled = false;
   })
-
+  
+  //here is another basic listener. 
   busStopSelect.addEventListener("change", function (){
-    console.log("BUS STOP SELECT ")
     toleranceSelect.disabled = false;
   })
 
@@ -224,6 +252,7 @@ $(document).ready(function(){
     }
   });
 });
+
 
 
 

@@ -178,8 +178,26 @@ $(document).ready(function(){
   toleranceSelect.disabled = true; 
 
   busLineSelect.addEventListener("change", function(){
-    console.log("BUS LINE SELECT")
-    busStopSelect.disabled = false;
+
+    var data = {route : busLineSelect.options[busLineSelect.selectedIndex].value}
+
+    $.ajax({
+
+      url: 'stops',
+      data: data,
+      type: 'POST',
+
+      success: function(response){
+        console.log(response);
+      },
+      error: function(error){
+        console.log(error);
+      }
+
+    })
+
+
+  busStopSelect.disabled = false;
   })
 
   busStopSelect.addEventListener("change", function (){

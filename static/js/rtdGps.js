@@ -1,4 +1,5 @@
 var globalMap; 
+var updateProcess;
 var markers = [];
 var circles = [];
 
@@ -75,12 +76,12 @@ function updateMap(destination,tolerance){
       map: globalMap,
       title:current.toString()
     }); 
-
     markers.push(current_marker);
     
-    test = circles.pop()
-    console.log("SHOULD BE 0 " + circles.length)
-    test.setMap(null);
+    //this removes any old circle left behind if the map is refreshed
+    if (oldCircle = circles.pop()){
+      oldCircle.setMap(null);
+    }
     
     var circleOptions = {
           strokeColor: '#FF0000',
@@ -108,7 +109,11 @@ This is where the Google maps is initially rendered
 
 function initialize(spinner,busLine,destination,tolerance) {
 
-  var updateProcess;
+  //checks if an update process is already running. 
+  if (updateProcess){ 
+    circles = [];
+    clearInterval(updateProcess);
+  }
 
   //this is the actual location updater that kicks off the process.
   navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
@@ -153,15 +158,11 @@ function initialize(spinner,busLine,destination,tolerance) {
           radius: tolerance    
     };
 
-    if (updateProcess){ 
-      circles = [];
-      clearInterval(updateProcess);
-    }
     centerCircle = new google.maps.Circle(circleOptions);
     circles.push(centerCircle);
 
     /* updates the map every 5 seconds */
-    var updateProcess = setInterval(function(){
+    updateProcess = setInterval(function(){
       updateMap(destination,tolerance);
     },5000);
   }

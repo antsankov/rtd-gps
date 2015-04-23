@@ -43,6 +43,9 @@ function calcDistance(loc1,loc2,tolerance) {
     console.log("TIME TO WAKE UP");
     //alert("TIME TO WAKE UP");
   }
+  else {
+    console.log("ALL GOOD!")
+  }
 }
 //clears any html options in an HTML selctbox
 function removeOptions(selectbox){
@@ -55,6 +58,9 @@ function removeOptions(selectbox){
 
 //this updates the map with our new position. 
 function updateMap(destination,tolerance){
+  //this actually gets our location and calls the success or failure function below
+  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
+
   //calculate our current position and run some other stuff. We might need to loop this every 10 seconds.
   function success(pos) {
     var crd = pos.coords;
@@ -73,8 +79,7 @@ function updateMap(destination,tolerance){
     markers.push(current_marker);
     
     test = circles.pop()
-    // console.log(circles.length)
-    // console.log(test.radius)
+    console.log("SHOULD BE 0 " + circles.length)
     test.setMap(null);
     
     var circleOptions = {
@@ -87,7 +92,7 @@ function updateMap(destination,tolerance){
           center: current,
           radius: tolerance    
     };
-
+    console.log(circleOptions.radius)
     centerCircle = new google.maps.Circle(circleOptions);
     circles.push(centerCircle);
   }
@@ -95,8 +100,6 @@ function updateMap(destination,tolerance){
   function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
   }
-  //this actually gets our location
-  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
 }
 
 /********************
@@ -104,8 +107,13 @@ This is where the Google maps is initially rendered
 *********************/
 
 function initialize(spinner,busLine,destination,tolerance) {
+
+  var updateProcess;
+
+  //this is the actual location updater that kicks off the process.
+  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
+
   function success(pos) {
-    circles = [];
     var crd = pos.coords;
     var current = new google.maps.LatLng(crd.latitude,crd.longitude);
 
@@ -114,7 +122,7 @@ function initialize(spinner,busLine,destination,tolerance) {
       center: current,
       zoom: 11
     };
-
+    globalMap = null;
     //instantiate the google map object
     globalMap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
     spinner.stop();
@@ -145,21 +153,24 @@ function initialize(spinner,busLine,destination,tolerance) {
           radius: tolerance    
     };
 
+    if (updateProcess){ 
+      circles = [];
+      clearInterval(updateProcess);
+    }
     centerCircle = new google.maps.Circle(circleOptions);
     circles.push(centerCircle);
+
+    /* updates the map every 5 seconds */
+    var updateProcess = setInterval(function(){
+      updateMap(destination,tolerance);
+    },5000);
   }
   function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
   }
-  
-  //this is the actual location updater. 
-  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
-
-  /* updates the map every 5 seconds */
-  window.setInterval(function(){
-    updateMap(destination,tolerance);
-  },5000);
 }
+
+
 /*
 Jquery stuff for when the page is loaded.
 */

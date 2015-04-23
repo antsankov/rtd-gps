@@ -205,13 +205,14 @@ $(document).ready(function(){
         //this is the form we are going to be using
         stopSelect = document.getElementById('busStopSelect');
         removeOptions(stopSelect);
-
+        console.log(stops)
         //iterate through all of the stops we just got and adds it to the form 
         for (stop of stops){
           var routeString = route.properties.ROUTE
 
           var value = document.createElement("OPTION");
-          value.setAttribute("value", stop.properties.STOPNAME);
+          var valueCoordinates = JSON.stringify({latitude : stop.properties.LAT, longitude : stop.properties.LONG});
+          value.setAttribute("value", valueCoordinates);
 
           var text = document.createTextNode(stop.properties.STOPNAME);
           value.appendChild(text);
@@ -230,6 +231,7 @@ $(document).ready(function(){
   
   //here is another basic listener. 
   busStopSelect.addEventListener("change", function (){
+    console.log(busStopSelect.value)
     toleranceSelect.disabled = false;
   })
 
@@ -239,13 +241,14 @@ $(document).ready(function(){
     //create the spinner 
     var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
     var destinationOption = busStopSelect.options[busStopSelect.selectedIndex].value;
-    var destinationCoord = busStops[destinationOption];
+    var destinationCoord = JSON.parse(busStopSelect.value);
     var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
 
     //check if all of the boxes have been filled first 
     if (busLine && destinationOption && destinationCoord && !isNaN(tolerance)) {
+      var destinationStop = new google.maps.LatLng(destinationCoord.latitude,destinationCoord.longitude);
       var spinner = new Spinner(opts).spin(target);
-      initialize(spinner,busLine,destinationCoord,parseInt(tolerance,10));
+      initialize(spinner,busLine,destinationStop,parseInt(tolerance,10));
     }
     else {
       alert("Selection unfilled!");

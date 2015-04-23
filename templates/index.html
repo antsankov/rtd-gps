@@ -38,11 +38,6 @@
         <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="busLineSelect">
           <option selected="selected" disabled="disabled">Select a Bus Line</option>
-<!--           <option value="1">BV</option>
-          <option value="2">BX</option>
-          <option value="3">BMX</option>
-          <option value="4">Foo</option>
-          <option value="5">Bar</option> -->
         </select>
       <hr>
       
@@ -116,7 +111,7 @@
       var busLineForm = document.getElementById('busLineSelect')
       //these are the routes given by python
       var routes = {{ busRoutes|safe }}
-      console.log(routes)
+
       //go through all of the routes, and add them to the bus lines. 
       for (route of routes){
         var routeString = route.properties.ROUTE

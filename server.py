@@ -15,6 +15,7 @@ global bus_routes_json
 @app.route('/')
 def return_nice(name=None):  
     global bus_routes_json
+
     return render_template('index.html', name = name, busRoutes = bus_routes_json)
 
 @app.route('/old')

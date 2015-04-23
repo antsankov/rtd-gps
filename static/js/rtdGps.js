@@ -2,23 +2,8 @@ var globalMap;
 var markers = [];
 var circles = [];
 
-//our bv_stops, a dictionary of the stops
-// see http://www3.rtd-denver.com/schedules/getSchedule.action?routeId=BV for stops
-// see http://www.latlong.net/ for coordinates
-var busStops = {
-    'boulder_transit_center' : new google.maps.LatLng(40.017103,-105.276444),
-    'broadway_16th' : new google.maps.LatLng(40.005663,-105.272381),
-    'broadway_27th' : new google.maps.LatLng(39.996074,-105.261018),
-    'table_mesa_pr' : new google.maps.LatLng(39.986404, -105.233055),
-    'mcaslin_pr'    : new google.maps.LatLng(39.959366, -105.167381),
-    'flatiron_circle_pr' : new google.maps.LatLng(39.933660, -105.122424),
-    'church_ranch_pr' : new google.maps.LatLng(39.888028, -105.073054),
-    'wewatta_21st' : new google.maps.LatLng(39.756907, -104.996797),
-    'union_station' : new google.maps.LatLng(39.752651, -105.001685)
-};
-
-//these are the options for getting the gps coordinates 
-var options = {
+//these are the options for getting the gps coordinates from the browser.
+var gpsOptions = {
   enableHighAccuracy: true,
   timeout: 30000,
   maximumAge: 0
@@ -30,7 +15,7 @@ var toleranceSelect = document.getElementById("toleranceSelect");
 var destinationSelect = document.getElementById("destinationSelect");
 
 ///////////Spinner options///////////////
-var opts = {
+var spinnerOptions = {
   lines: 13, // The number of lines to draw
   length: 20, // The length of each line
   width: 10, // The line thickness
@@ -48,10 +33,10 @@ var opts = {
   top: '50%', // Top position relative to parent
   left: '50%' // Left position relative to parent
 };
-////////////////////////////////////////////////
+//////////////Helper Functions////////////////////////////
 
+//calculates whether or not we're within alert range of our final stop. 
 function calcDistance(loc1,loc2,tolerance) {
-
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (distance <= tolerance){
     //make a noise
@@ -59,8 +44,7 @@ function calcDistance(loc1,loc2,tolerance) {
     //alert("TIME TO WAKE UP");
   }
 }
-
-//clears any html options in a selctbox
+//clears any html options in an HTML selctbox
 function removeOptions(selectbox){
     var i;
     for(i=selectbox.options.length-1;i>=0;i--){
@@ -112,11 +96,11 @@ function updateMap(destination,tolerance){
     console.warn('ERROR(' + err.code + '): ' + err.message);
   }
   //this actually gets our location
-  navigator.geolocation.getCurrentPosition(success, error, options);
+  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
 }
 
 /********************
-This is where the Google maps is actually rendered
+This is where the Google maps is initially rendered
 *********************/
 
 function initialize(spinner,busLine,destination,tolerance) {
@@ -164,26 +148,22 @@ function initialize(spinner,busLine,destination,tolerance) {
     centerCircle = new google.maps.Circle(circleOptions);
     circles.push(centerCircle);
   }
-
   function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
   }
   
   //this is the actual location updater. 
-  navigator.geolocation.getCurrentPosition(success, error, options);
+  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
 
   /* updates the map every 5 seconds */
   window.setInterval(function(){
     updateMap(destination,tolerance);
   },5000);
 }
-
 /*
 Jquery stuff for when the page is loaded.
 */
-
 $(document).ready(function(){
-
   //tell the spinner where to spawn. 
   var target = document.getElementById('map-canvas');
 
@@ -198,19 +178,19 @@ $(document).ready(function(){
       url: 'stops',
       data: data,
       type: 'POST',
-
       success: function(response){
         //parse the response from our python server to an array of objects.
         stops = JSON.parse(response)
         //this is the form we are going to be using
         stopSelect = document.getElementById('busStopSelect');
         removeOptions(stopSelect);
-        console.log(stops)
+
         //iterate through all of the stops we just got and adds it to the form 
         for (stop of stops){
           var routeString = route.properties.ROUTE
 
           var value = document.createElement("OPTION");
+          //create a stirng for our value that is a json of latitude and logitude. 
           var valueCoordinates = JSON.stringify({latitude : stop.properties.LAT, longitude : stop.properties.LONG});
           value.setAttribute("value", valueCoordinates);
 
@@ -220,44 +200,39 @@ $(document).ready(function(){
           stopSelect.appendChild(value);
         }
       },
-
       error: function(error){
         console.log(error);
       }
-  })
+    })
   //once it's been populated, we can reenable our busStop selector
   busStopSelect.disabled = false;
   })
   
-  //here is another basic listener. 
+  //here is another basic listener for our busStop box. 
   busStopSelect.addEventListener("change", function (){
-    console.log(busStopSelect.value)
     toleranceSelect.disabled = false;
   })
 
   var button = document.getElementById('startButton');
 
   button.addEventListener("click", function(){ 
-    //create the spinner 
+
     var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
     var destinationOption = busStopSelect.options[busStopSelect.selectedIndex].value;
     var destinationCoord = JSON.parse(busStopSelect.value);
-    var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
+    var tolerance = parseInt(toleranceSelect.options[toleranceSelect.selectedIndex].value,10);
 
     //check if all of the boxes have been filled first 
     if (busLine && destinationOption && destinationCoord && !isNaN(tolerance)) {
+      //read the coordiantes of our option and create the destination google maps object to pass to our initializer. 
       var destinationStop = new google.maps.LatLng(destinationCoord.latitude,destinationCoord.longitude);
-      var spinner = new Spinner(opts).spin(target);
-      initialize(spinner,busLine,destinationStop,parseInt(tolerance,10));
+      //create the spinner for us to put while the map is loading. 
+      var spinner = new Spinner(spinnerOptions).spin(target);
+      //run the initializer feature to create the map 
+      initialize(spinner,busLine,destinationStop,tolerance);
     }
     else {
       alert("Selection unfilled!");
     }
   });
 });
-
-
-
-
-
-

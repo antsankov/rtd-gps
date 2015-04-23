@@ -25,7 +25,7 @@ def return_working(name=None):
 @app.route('/stops', methods=['POST'])
 def get_stops(name=None):
     route_stops = []
-    for stop in stops_c.find({"properties.ROUTES": request.form['route']}, {"_id":0,"properties.STOPNAME":1,"properties.LONG":1,"properties.LAT":1}):
+    for stop in stops_c.find({'properties.ROUTES':{'$regex':request.form['route']}},{"_id":0,"properties.STOPNAME":1,"properties.LONG":1,"properties.LAT":1}):
         route_stops.append(stop)
 
     stops_json = json.dumps(route_stops)
@@ -34,7 +34,7 @@ def get_stops(name=None):
 #this populates our bus routes whenever the server is started up. 
 def populate_routes():
     bus_routes = []
-    for route in  routes_c.find({},{"_id" : 0, "properties.ROUTE": 1}): 
+    for route in  routes_c.find({},{"_id" : 0, "properties.ROUTE": 1}).sort("properties.ROUTE", 1): 
         bus_routes.append(route)
 
     global bus_routes_json

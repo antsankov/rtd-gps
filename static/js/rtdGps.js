@@ -41,11 +41,14 @@ var spinnerOptions = {
 function calcDistance(loc1,loc2,tolerance) {
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (wokenUp == false && distance <= tolerance){
-    setTimeout(function(){ 
-      if (window.confirm("You are " + distance + " meters from your stop. Have you woken up?")){
-        wokenUp = true; 
-      }
-    },5000);
+
+    myConfirm('Time to wakeup! ', function () {
+        wokenUp = true;
+      }, function () {
+        console.log("THEY AREN'T AWAKE!")
+      },
+      "I've really woken up!"
+    );
 
     if (distance < 1000){
       console.log(" REALLY TIME TO WAKE UP");
@@ -68,6 +71,32 @@ function removeOptions(selectbox){
         selectbox.remove(i);
     }
 }
+
+function myConfirm(dialogText, okFunc, cancelFunc, dialogTitle) {
+  $('<div style="padding: 10px; max-width: 500px; word-wrap: break-word;">' + dialogText + '</div>').dialog({
+    draggable: false,
+    modal: true,
+    resizable: false,
+    width: 'auto',
+    title: dialogTitle || 'Confirm',
+    minHeight: 75,
+    buttons: {
+      OK: function () {
+        if (typeof (okFunc) == 'function') {
+          setTimeout(okFunc, 50);
+        }
+        $(this).dialog('destroy');
+      },
+      Cancel: function () {
+        if (typeof (cancelFunc) == 'function') {
+          setTimeout(cancelFunc, 50);
+        }
+        $(this).dialog('destroy');
+      }
+    }
+  });
+}
+
 ////////////////////////////////////////////////
 
 //this updates the map with our new position. 

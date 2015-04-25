@@ -3,6 +3,7 @@ var updateProcess;
 var markers = [];
 var circles = [];
 var wokenUp = false; 
+var windowOpen = false; 
 
 //these are the options for getting the gps coordinates from the browser.
 var gpsOptions = {
@@ -42,23 +43,33 @@ function calcDistance(loc1,loc2,tolerance) {
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (wokenUp == false && distance <= tolerance){
 
-    myConfirm('Time to wakeup! ', function () {
+    //if the window is open, close it
+    if (windowOpen){
+      bootbox.hideAll();
+      windowOpen = false;
+    }
+    // if it isn't open, open it again. 
+    if (!windowOpen){
+      windowOpen = true; 
+      bootbox.alert("Time to wakeup!", function() {
+        console.log("Woken up");
+        windowOpen = false; 
         wokenUp = true;
-      }, function () {
-        console.log("THEY AREN'T AWAKE!")
-      },
-      "I've really woken up!"
-    );
+        });
+    };
 
+    // if the distance is less than 1000 meters, call the siren
     if (distance < 1000){
       console.log(" REALLY TIME TO WAKE UP");
       document.getElementById('siren').play();
     }
-    else {
+    // if the distance is greater than 1000 meters but less than the tolerance, play the nicer alarm.  
+    if (distance > 1000) {
       console.log("wake up");
       document.getElementById('alarm').play();
     }
   }
+  //if they are already woken up, don't do anything.
   if (wokenUp){
     console.log("YOU'RE AWAKE!")
   }
@@ -70,31 +81,6 @@ function removeOptions(selectbox){
     for(i=selectbox.options.length-1;i>=0;i--){
         selectbox.remove(i);
     }
-}
-
-function myConfirm(dialogText, okFunc, cancelFunc, dialogTitle) {
-  $('<div style="padding: 10px; max-width: 500px; word-wrap: break-word;">' + dialogText + '</div>').dialog({
-    draggable: false,
-    modal: true,
-    resizable: false,
-    width: 'auto',
-    title: dialogTitle || 'Confirm',
-    minHeight: 75,
-    buttons: {
-      OK: function () {
-        if (typeof (okFunc) == 'function') {
-          setTimeout(okFunc, 50);
-        }
-        $(this).dialog('destroy');
-      },
-      Cancel: function () {
-        if (typeof (cancelFunc) == 'function') {
-          setTimeout(cancelFunc, 50);
-        }
-        $(this).dialog('destroy');
-      }
-    }
-  });
 }
 
 ////////////////////////////////////////////////

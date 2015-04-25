@@ -40,6 +40,7 @@ var spinnerOptions = {
 
 //calculates whether or not we're within alert range of our final stop. 
 function calcDistance(loc1,loc2,tolerance) {
+  console.log("calc distance called!")
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (wokenUp == false && distance <= tolerance){
 
@@ -51,7 +52,7 @@ function calcDistance(loc1,loc2,tolerance) {
     // if it isn't open, open it again. 
     if (!windowOpen){
       windowOpen = true; 
-      bootbox.alert("Time to wakeup!", function() {
+      bootbox.alert("Time to wakeup! You are " + parseInt(distance,10) + " meters from the stop!", function() {
         console.log("Woken up");
         windowOpen = false; 
         wokenUp = true;
@@ -78,7 +79,7 @@ function calcDistance(loc1,loc2,tolerance) {
 //clears any html options in an HTML selctbox
 function removeOptions(selectbox){
     var i;
-    for(i=selectbox.options.length-1;i>=0;i--){
+    for(i=selectbox.options.length-1;i>=1;i--){
         selectbox.remove(i);
     }
 }

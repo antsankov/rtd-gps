@@ -35,7 +35,7 @@
       <div class="panel panel-default">
         <div class="panel-heading"><h4>Bus Line</h4></div>
       </div>
-        <!-- TODO, POPULATE THIS FROM DATABSE -->
+
         <select class="form-control" id="busLineSelect">
           <option selected="selected" disabled="disabled">Select a Bus Line</option>
         </select>
@@ -44,18 +44,8 @@
       <div class="panel panel-default">
         <div class="panel-heading"><h4>Desired Stop</h4></div>
       </div>
-        <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="busStopSelect">
           <option selected="selected" disabled="disabled">Select a Stop</option>
-<!--           <option value="boulder_transit_center">boulder_transit_center</option>
-          <option value="broadway_16th">broadway_16th</option>
-          <option value="broadway_27th">broadway_27th</option>
-          <option value="table_mesa_pr">table_mesa_pr</option>
-          <option value="mcaslin_pr">mcaslin_pr</option>   
-          <option value="flatiron_circle_pr">flatiron_circle_pr</option>
-          <option value="church_ranch_pr">church_ranch_pr</option>
-          <option value="wewatta_21st">wewatta_21st</option>
-          <option value="union_station">union_station</option> -->
         </select>
       <hr>      
 
@@ -101,9 +91,9 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>    
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDh5Yw1A9sdux0lFCw3cjBN4UdKRwOukSo&sensor=false&libraries=geometry"></script>
-    <!--     <script src="{{ url_for(".static", filename="js/rtdGps.js") }}"></script>-->    
     <script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
     <script src="{{ url_for(".static", filename="js/rtdGps.js") }}"></script>
+
 	</body>
 
 
@@ -126,5 +116,8 @@
       }
 
     </script>
+
+    <audio id="alarm" src= "{{ url_for(".static", filename="assets/alarm.mp3") }}" preload="auto"></audio>
+    <audio id="siren" src= "{{ url_for(".static", filename="assets/siren.mp3") }}" preload="auto"></audio>
 
 </html>

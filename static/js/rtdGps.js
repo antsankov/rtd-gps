@@ -2,6 +2,7 @@ var globalMap;
 var updateProcess;
 var markers = [];
 var circles = [];
+var wokenUp = false; 
 
 //these are the options for getting the gps coordinates from the browser.
 var gpsOptions = {
@@ -39,15 +40,27 @@ var spinnerOptions = {
 //calculates whether or not we're within alert range of our final stop. 
 function calcDistance(loc1,loc2,tolerance) {
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
-  if (distance <= tolerance){
-    //make a noise
-    console.log("TIME TO WAKE UP");
-    //alert("TIME TO WAKE UP");
+  if (wokenUp == false && distance <= tolerance){
+    setTimeout(function(){ 
+      if (window.confirm("You are " + distance + " meters from your stop. Have you woken up?")){
+        wokenUp = true; 
+      }
+    },5000);
+
+    if (distance < 1000){
+      console.log(" REALLY TIME TO WAKE UP");
+      document.getElementById('siren').play();
+    }
+    else {
+      console.log("wake up");
+      document.getElementById('alarm').play();
+    }
   }
-  else {
-    console.log("ALL GOOD!")
+  if (wokenUp){
+    console.log("YOU'RE AWAKE!")
   }
 }
+
 //clears any html options in an HTML selctbox
 function removeOptions(selectbox){
     var i;
@@ -93,7 +106,7 @@ function updateMap(destination,tolerance){
           center: current,
           radius: tolerance    
     };
-    console.log(circleOptions.radius)
+
     centerCircle = new google.maps.Circle(circleOptions);
     circles.push(centerCircle);
   }

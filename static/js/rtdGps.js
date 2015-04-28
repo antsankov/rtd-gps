@@ -40,7 +40,7 @@ var spinnerOptions = {
 
 //calculates whether or not we're within alert range of our final stop. 
 function calcDistance(loc1,loc2,tolerance) {
-  console.log("calc distance called!")
+
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
   if (wokenUp == false && distance <= tolerance){
 
@@ -53,7 +53,6 @@ function calcDistance(loc1,loc2,tolerance) {
     if (!windowOpen){
       windowOpen = true; 
       bootbox.alert("Time to wakeup! You are " + parseInt(distance,10) + " meters from the stop!", function() {
-        console.log("Woken up");
         windowOpen = false; 
         wokenUp = true;
         });
@@ -66,15 +65,15 @@ function calcDistance(loc1,loc2,tolerance) {
     }
     // if the distance is greater than 1000 meters but less than the tolerance, play the nicer alarm.  
     if (distance > 1000) {
-      console.log("wake up");
+      console.log("kind of need to wake up");
       document.getElementById('alarm').play();
     }
   }
   //if they are already woken up, don't do anything.
   if (wokenUp){
-    console.log("YOU'RE AWAKE!")
+   
+} console.log("YOU'RE AWAKE!")
   }
-}
 
 //clears any html options in an HTML selctbox
 function removeOptions(selectbox){
@@ -191,7 +190,7 @@ function initialize(spinner,busLine,destination,tolerance) {
     circles.push(centerCircle);
 
     /* updates the map every 5 seconds */
-    updateProcess = setInterval(function(){
+    updat`eProcess = setInterval(function(){
       updateMap(destination,tolerance);
     },5000);
   }

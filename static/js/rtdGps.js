@@ -1,24 +1,12 @@
 var globalMap; 
+var updateProcess;
 var markers = [];
 var circles = [];
+var wokenUp = false; 
+var windowOpen = false; 
 
-//our bv_stops, a dictionary of the stops
-// see http://www3.rtd-denver.com/schedules/getSchedule.action?routeId=BV for stops
-// see http://www.latlong.net/ for coordinates
-var busStops = {
-    'boulder_transit_center' : new google.maps.LatLng(40.017103,-105.276444),
-    'broadway_16th' : new google.maps.LatLng(40.005663,-105.272381),
-    'broadway_27th' : new google.maps.LatLng(39.996074,-105.261018),
-    'table_mesa_pr' : new google.maps.LatLng(39.986404, -105.233055),
-    'mcaslin_pr'    : new google.maps.LatLng(39.959366, -105.167381),
-    'flatiron_circle_pr' : new google.maps.LatLng(39.933660, -105.122424),
-    'church_ranch_pr' : new google.maps.LatLng(39.888028, -105.073054),
-    'wewatta_21st' : new google.maps.LatLng(39.756907, -104.996797),
-    'union_station' : new google.maps.LatLng(39.752651, -105.001685)
-};
-
-//these are the options for getting the gps coordinates 
-var options = {
+//these are the options for getting the gps coordinates from the browser.
+var gpsOptions = {
   enableHighAccuracy: true,
   timeout: 30000,
   maximumAge: 0
@@ -30,7 +18,7 @@ var toleranceSelect = document.getElementById("toleranceSelect");
 var destinationSelect = document.getElementById("destinationSelect");
 
 ///////////Spinner options///////////////
-var opts = {
+var spinnerOptions = {
   lines: 13, // The number of lines to draw
   length: 20, // The length of each line
   width: 10, // The line thickness
@@ -48,29 +36,60 @@ var opts = {
   top: '50%', // Top position relative to parent
   left: '50%' // Left position relative to parent
 };
-////////////////////////////////////////////////
+//////////////Helper Functions////////////////////////////
 
+//calculates whether or not we're within alert range of our final stop. 
 function calcDistance(loc1,loc2,tolerance) {
 
   var distance = google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2);
-  if (distance <= tolerance){
-    //make a noise
-    console.log("TIME TO WAKE UP");
-    //alert("TIME TO WAKE UP");
-  }
-}
+  if (wokenUp == false && distance <= tolerance){
 
-//clears any html options in a selctbox
+    //if the window is open, close it
+    if (windowOpen){
+      bootbox.hideAll();
+      windowOpen = false;
+    }
+    // if it isn't open, open it again. 
+    if (!windowOpen){
+      windowOpen = true; 
+      bootbox.alert("Time to wakeup! You are " + parseInt(distance,10) + " meters from the stop!", function() {
+        windowOpen = false; 
+        wokenUp = true;
+        });
+    };
+
+    // if the distance is less than 1000 meters, call the siren
+    if (distance < 1000){
+      console.log(" REALLY TIME TO WAKE UP");
+      document.getElementById('siren').play();
+    }
+    // if the distance is greater than 1000 meters but less than the tolerance, play the nicer alarm.  
+    if (distance > 1000) {
+      console.log("kind of need to wake up");
+      document.getElementById('alarm').play();
+    }
+  }
+  //if they are already woken up, don't do anything.
+  if (wokenUp){
+   
+} console.log("YOU'RE AWAKE!")
+  }
+
+//clears any html options in an HTML selctbox
 function removeOptions(selectbox){
     var i;
-    for(i=selectbox.options.length-1;i>=0;i--){
+    for(i=selectbox.options.length-1;i>=1;i--){
         selectbox.remove(i);
     }
 }
+
 ////////////////////////////////////////////////
 
 //this updates the map with our new position. 
 function updateMap(destination,tolerance){
+  //this actually gets our location and calls the success or failure function below
+  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
+
   //calculate our current position and run some other stuff. We might need to loop this every 10 seconds.
   function success(pos) {
     var crd = pos.coords;
@@ -85,13 +104,12 @@ function updateMap(destination,tolerance){
       map: globalMap,
       title:current.toString()
     }); 
-
     markers.push(current_marker);
     
-    test = circles.pop()
-    // console.log(circles.length)
-    // console.log(test.radius)
-    test.setMap(null);
+    //this removes any old circle left behind if the map is refreshed
+    if (oldCircle = circles.pop()){
+      oldCircle.setMap(null);
+    }
     
     var circleOptions = {
           strokeColor: '#FF0000',
@@ -111,17 +129,24 @@ function updateMap(destination,tolerance){
   function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
   }
-  //this actually gets our location
-  navigator.geolocation.getCurrentPosition(success, error, options);
 }
 
 /********************
-This is where the Google maps is actually rendered
+This is where the Google maps is initially rendered
 *********************/
 
 function initialize(spinner,busLine,destination,tolerance) {
-  function success(pos) {
+
+  //checks if an update process is already running. 
+  if (updateProcess){ 
     circles = [];
+    clearInterval(updateProcess);
+  }
+
+  //this is the actual location updater that kicks off the process.
+  navigator.geolocation.getCurrentPosition(success, error, gpsOptions);
+
+  function success(pos) {
     var crd = pos.coords;
     var current = new google.maps.LatLng(crd.latitude,crd.longitude);
 
@@ -130,7 +155,7 @@ function initialize(spinner,busLine,destination,tolerance) {
       center: current,
       zoom: 11
     };
-
+    globalMap = null;
     //instantiate the google map object
     globalMap = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
     spinner.stop();
@@ -163,27 +188,22 @@ function initialize(spinner,busLine,destination,tolerance) {
 
     centerCircle = new google.maps.Circle(circleOptions);
     circles.push(centerCircle);
-  }
 
+    /* updates the map every 5 seconds */
+    updat`eProcess = setInterval(function(){
+      updateMap(destination,tolerance);
+    },5000);
+  }
   function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
   }
-  
-  //this is the actual location updater. 
-  navigator.geolocation.getCurrentPosition(success, error, options);
-
-  /* updates the map every 5 seconds */
-  window.setInterval(function(){
-    updateMap(destination,tolerance);
-  },5000);
 }
+
 
 /*
 Jquery stuff for when the page is loaded.
 */
-
 $(document).ready(function(){
-
   //tell the spinner where to spawn. 
   var target = document.getElementById('map-canvas');
 
@@ -198,7 +218,6 @@ $(document).ready(function(){
       url: 'stops',
       data: data,
       type: 'POST',
-
       success: function(response){
         //parse the response from our python server to an array of objects.
         stops = JSON.parse(response)
@@ -211,7 +230,9 @@ $(document).ready(function(){
           var routeString = route.properties.ROUTE
 
           var value = document.createElement("OPTION");
-          value.setAttribute("value", stop.properties.STOPNAME);
+          //create a stirng for our value that is a json of latitude and logitude. 
+          var valueCoordinates = JSON.stringify({latitude : stop.properties.LAT, longitude : stop.properties.LONG});
+          value.setAttribute("value", valueCoordinates);
 
           var text = document.createTextNode(stop.properties.STOPNAME);
           value.appendChild(text);
@@ -219,16 +240,15 @@ $(document).ready(function(){
           stopSelect.appendChild(value);
         }
       },
-
       error: function(error){
         console.log(error);
       }
-  })
+    })
   //once it's been populated, we can reenable our busStop selector
   busStopSelect.disabled = false;
   })
   
-  //here is another basic listener. 
+  //here is another basic listener for our busStop box. 
   busStopSelect.addEventListener("change", function (){
     toleranceSelect.disabled = false;
   })
@@ -236,25 +256,23 @@ $(document).ready(function(){
   var button = document.getElementById('startButton');
 
   button.addEventListener("click", function(){ 
-    //create the spinner 
+
     var busLine = busLineSelect.options[busLineSelect.selectedIndex].value;
     var destinationOption = busStopSelect.options[busStopSelect.selectedIndex].value;
-    var destinationCoord = busStops[destinationOption];
-    var tolerance = toleranceSelect.options[toleranceSelect.selectedIndex].value;
+    var destinationCoord = JSON.parse(busStopSelect.value);
+    var tolerance = parseInt(toleranceSelect.options[toleranceSelect.selectedIndex].value,10);
 
     //check if all of the boxes have been filled first 
     if (busLine && destinationOption && destinationCoord && !isNaN(tolerance)) {
-      var spinner = new Spinner(opts).spin(target);
-      initialize(spinner,busLine,destinationCoord,parseInt(tolerance,10));
+      //read the coordiantes of our option and create the destination google maps object to pass to our initializer. 
+      var destinationStop = new google.maps.LatLng(destinationCoord.latitude,destinationCoord.longitude);
+      //create the spinner for us to put while the map is loading. 
+      var spinner = new Spinner(spinnerOptions).spin(target);
+      //run the initializer feature to create the map 
+      initialize(spinner,busLine,destinationStop,tolerance);
     }
     else {
       alert("Selection unfilled!");
     }
   });
 });
-
-
-
-
-
-

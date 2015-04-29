@@ -13,6 +13,11 @@
 <!-- begin template -->
 <div class="navbar navbar-custom navbar-fixed-top">
  <div class="navbar-header"><a class="navbar-brand" href="#">RTD Bus Timer</a>
+      <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
     </div>
 </div>
 
@@ -21,33 +26,49 @@
 <div class="container-fluid" id="main">
   <div class="row">
     <!-- Size text defined here. Define size of map in styles.css -->
-    <div class="col-xs-5" id="left">
+    <div class="col-xs-4" id="left">
     
-     <h4>Select a bus line, stop, and distance to be woken!</h4>   
-
+    <!-- <h3>Select a bus line, a stop, and a distance to be woken up!</h3>-->   
+    <h3> SELECT A WAKEUP DISTANCE TO ACTIVATE THE MAP </h3>   
+      
       <!-- item list -->
       <div class="panel panel-default">
-        <div class="panel-heading"><h4>Line</h4></div>
+        <div class="panel-heading"><h4>Bus Line</h4></div>
       </div>
-
+        <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="busLineSelect">
-          <option selected="selected" disabled="disabled">Select</option>
+          <option selected="selected" disabled="disabled">Select a Bus Line</option>
+<!--           <option value="1">BV</option>
+          <option value="2">BX</option>
+          <option value="3">BMX</option>
+          <option value="4">Foo</option>
+          <option value="5">Bar</option> -->
         </select>
       <hr>
       
       <div class="panel panel-default">
-        <div class="panel-heading"><h4>Stop</h4></div>
+        <div class="panel-heading"><h4>Desired Stop</h4></div>
       </div>
+        <!-- TODO, POPULATE THIS FROM DATABSE -->
         <select class="form-control" id="busStopSelect">
-          <option selected="selected" disabled="disabled">Select</option>
+          <option selected="selected" disabled="disabled">Select a Stop</option>
+<!--           <option value="boulder_transit_center">boulder_transit_center</option>
+          <option value="broadway_16th">broadway_16th</option>
+          <option value="broadway_27th">broadway_27th</option>
+          <option value="table_mesa_pr">table_mesa_pr</option>
+          <option value="mcaslin_pr">mcaslin_pr</option>   
+          <option value="flatiron_circle_pr">flatiron_circle_pr</option>
+          <option value="church_ranch_pr">church_ranch_pr</option>
+          <option value="wewatta_21st">wewatta_21st</option>
+          <option value="union_station">union_station</option> -->
         </select>
       <hr>      
 
       <div class="panel panel-default">
-        <div class="panel-heading"><h4>Distance</h4></div>
+        <div class="panel-heading"><h4>Wakeup distance</h4></div>
       </div>
         <select class="form-control" id="toleranceSelect">
-          <option selected="selected" disabled="disabled">Select</option>
+          <option selected="selected" disabled="disabled">Select a Distance to wakeup to activate</option>
           <option value="5000">5000 meters</option>
           <option value="2500">2500 meters</option>
           <option value="1500">1500 meters</option>
@@ -62,7 +83,7 @@
       <div class="panel panel-default">
         <div class="panel-heading"><h4>About </h4></div>
       </div>
-      <p>Data Engineering Class Final Project</p>
+      <p>This is for our Data Engineering Class -- PUT INFO ABOUT THE PROGRAM HERE</p>
 
 <!--       <hr>
       <p>
@@ -71,7 +92,7 @@
       
       <hr>    
       <p>
-      <a href="https://github.com/antsankov/rtd-gps" target="_ext" class="center-block btn btn-primary">Source</a>
+      <a href="https://github.com/antsankov/rtd-gps" target="_ext" class="center-block btn btn-primary">Check out the Source Code!</a>
       </p>
         
       <hr>      
@@ -83,21 +104,19 @@
 
 	<!-- script references -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>    
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDh5Yw1A9sdux0lFCw3cjBN4UdKRwOukSo&sensor=false&libraries=geometry"></script>
+    <!--     <script src="{{ url_for(".static", filename="js/rtdGps.js") }}"></script>-->    
     <script src="http://fgnass.github.io/spin.js/spin.min.js"></script>
-    <script src="{{ url_for(".static", filename="js/bootbox.min.js") }}"></script>
     <script src="{{ url_for(".static", filename="js/rtdGps.js") }}"></script>
-
-    </body>
+	</body>
 
 
     <script>
       var busLineForm = document.getElementById('busLineSelect')
       //these are the routes given by python
       var routes = {{ busRoutes|safe }}
-
+      console.log(routes)
       //go through all of the routes, and add them to the bus lines. 
       for (route of routes){
         var routeString = route.properties.ROUTE
@@ -112,8 +131,5 @@
       }
 
     </script>
-
-    <audio id="alarm" src= "{{ url_for(".static", filename="assets/alarm.mp3") }}" preload="auto"></audio>
-    <audio id="siren" src= "{{ url_for(".static", filename="assets/siren.mp3") }}" preload="auto"></audio>
 
 </html>

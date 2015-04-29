@@ -190,7 +190,7 @@ function initialize(spinner,busLine,destination,tolerance) {
     circles.push(centerCircle);
 
     /* updates the map every 5 seconds */
-    updat`eProcess = setInterval(function(){
+    updateProcess = setInterval(function(){
       updateMap(destination,tolerance);
     },5000);
   }
